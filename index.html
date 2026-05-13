@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3b5b" />
+  <title>Dream Team Travel — Online rezervacija kombi prevoza</title>
+  <meta name="description" content="Brza online rezervacija kombi prevoza iz Beograda za Hrvatsku, Sloveniju i šire. Od vrata do vrata, plaćanje kod vozača." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Trust bar -->
+  <div class="trust-bar">
+    <span><strong>4.9★</strong> · 197 recenzija</span>
+    <span class="dot"></span>
+    <span>Plaćanje kod vozača</span>
+    <span class="dot hide-sm"></span>
+    <span class="hide-sm">Besplatna izmena rezervacije</span>
+  </div>
+
+  <!-- Nav -->
+  <header class="nav">
+    <a href="#" class="brand" aria-label="Dream Team Travel početna">
+      <span class="brand-mark">DT</span>
+      <span class="brand-name">Dream Team Travel</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#linije">Linije</a>
+      <a href="#kako">Kako funkcioniše</a>
+      <a href="#faq">Pitanja</a>
+      <a href="tel:+381604264265" class="nav-phone">📞 060 426 4265</a>
+    </nav>
+  </header>
+
+  <!-- Hero / Booking entry -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="eyebrow">Kombi prevoz Beograd ↔ Hrvatska</span>
+      <h1>Rezerviši mesto<br/>za 60 sekundi.</h1>
+      <p class="hero-sub">Polasci svaki dan. Od adrese u Beogradu do adrese u Hrvatskoj. Bez presedanja.</p>
+      <ul class="hero-points">
+        <li><span class="check">✓</span> Vidiš slobodna mesta odmah</li>
+        <li><span class="check">✓</span> Plaćaš kod vozača (gotovina ili kartica)</li>
+        <li><span class="check">✓</span> Potvrda na WhatsApp / Viber</li>
+      </ul>
+    </div>
+
+    <!-- Booking card -->
+    <div class="booking-card" id="booking">
+      <div class="bc-header">
+        <h2>Pronađi svoj polazak</h2>
+        <p>Beograd je polazna tačka — kombi te preuzima na adresi.</p>
+      </div>
+
+      <form id="search-form" class="bc-form" novalidate>
+        <label class="field">
+          <span>Destinacija u Hrvatskoj</span>
+          <select id="route" required></select>
+        </label>
+
+        <div class="grid-2">
+          <label class="field">
+            <span>Datum polaska</span>
+            <input type="date" id="date" required />
+          </label>
+          <label class="field">
+            <span>Putnika</span>
+            <select id="pax" required>
+              <option value="1">1 putnik</option>
+              <option value="2">2 putnika</option>
+              <option value="3">3 putnika</option>
+              <option value="4">4 putnika</option>
+              <option value="5">5 putnika</option>
+              <option value="6">6 putnika</option>
+              <option value="7">7 putnika</option>
+              <option value="8">8 putnika</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset class="trip-type">
+          <legend class="sr-only">Tip puta</legend>
+          <label><input type="radio" name="tripType" value="oneWay" checked /><span>U jednom pravcu</span></label>
+          <label><input type="radio" name="tripType" value="return" /><span>Povratna karta <em>(ušteda ~10€)</em></span></label>
+        </fieldset>
+
+        <button class="btn-primary btn-lg" type="submit">
+          Prikaži slobodne polaske →
+        </button>
+        <p class="reassure">Bez plaćanja online · Otkazivanje besplatno 24h pre polaska</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Booking flow (skriveno, otvara se nakon submita) -->
+  <section class="flow" id="flow" hidden>
+    <div class="flow-inner">
+      <div class="flow-header">
+        <button class="back-btn" id="flow-back" aria-label="Nazad">‹</button>
+        <div class="flow-progress">
+          <div class="step" data-step="1">1</div>
+          <div class="bar"></div>
+          <div class="step" data-step="2">2</div>
+          <div class="bar"></div>
+          <div class="step" data-step="3">3</div>
+        </div>
+        <div class="flow-summary" id="flow-summary"></div>
+      </div>
+
+      <!-- KORAK 1: Izbor polaska -->
+      <div class="flow-step" id="step-1">
+        <h2>Slobodni polasci</h2>
+        <p class="muted">Izaberi polazak. Kombi ima maksimalno 8 mesta.</p>
+        <div class="departure-list" id="departure-list"></div>
+      </div>
+
+      <!-- KORAK 2: Pickup + putnici -->
+      <div class="flow-step" id="step-2" hidden>
+        <h2>Gde te preuzimamo?</h2>
+        <p class="muted">Vozač dolazi na adresu u Beogradu. Bez dodatne naplate.</p>
+
+        <label class="field">
+          <span>Pickup adresa u Beogradu</span>
+          <input type="text" id="pickup" placeholder="npr. Bulevar kralja Aleksandra 73, Vračar" />
+          <small class="hint">Stan, hotel, aerodrom, restoran — gde god ti odgovara.</small>
+        </label>
+
+        <label class="field">
+          <span>Adresa dolaska <span id="dropoff-city"></span></span>
+          <input type="text" id="dropoff" placeholder="Hotel, apartman ili ulica" />
+        </label>
+
+        <h3 class="section-h3">Kontakt nosioca rezervacije</h3>
+        <label class="field">
+          <span>Ime i prezime</span>
+          <input type="text" id="fullname" autocomplete="name" />
+        </label>
+
+        <div class="grid-2">
+          <label class="field">
+            <span>Telefon</span>
+            <input type="tel" id="phone" placeholder="+381 ..." autocomplete="tel" />
+          </label>
+          <label class="field">
+            <span>Email <em>(opciono)</em></span>
+            <input type="email" id="email" autocomplete="email" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Napomena za vozača <em>(opciono)</em></span>
+          <textarea id="note" rows="2" placeholder="npr. Dete od 4 god — molim sedište. Veliki kofer."></textarea>
+        </label>
+
+        <label class="checkbox">
+          <input type="checkbox" id="whatsapp-opt" checked />
+          <span>Pošalji mi potvrdu i podsetnik na WhatsApp</span>
+        </label>
+
+        <button class="btn-primary btn-lg" id="to-step-3">Pregled rezervacije →</button>
+      </div>
+
+      <!-- KORAK 3: Pregled + potvrda -->
+      <div class="flow-step" id="step-3" hidden>
+        <h2>Pregled rezervacije</h2>
+        <p class="muted">Pre potvrde proveri detalje. Plaćaš kod vozača.</p>
+
+        <div class="review-card" id="review-card"></div>
+
+        <div class="price-box">
+          <div class="row"><span>Cena po osobi</span><span id="price-per"></span></div>
+          <div class="row"><span>Broj putnika</span><span id="price-pax"></span></div>
+          <div class="row total"><span>Ukupno</span><span id="price-total"></span></div>
+          <small class="muted">Plaćanje kod vozača · EUR ili dinari po srednjem kursu</small>
+        </div>
+
+        <label class="checkbox">
+          <input type="checkbox" id="terms" />
+          <span>Slažem se sa <a href="#" onclick="return false">uslovima prevoza i otkazivanjem</a>.</span>
+        </label>
+
+        <button class="btn-primary btn-lg" id="confirm">Potvrdi rezervaciju</button>
+        <p class="reassure">Bez online plaćanja · Slobodno otkazivanje 24h pre polaska</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confirmation modal -->
+  <div class="confirm-overlay" id="confirm-overlay" hidden>
+    <div class="confirm-modal">
+      <div class="confirm-icon">✓</div>
+      <h2>Rezervacija primljena!</h2>
+      <p>Šaljemo ti detalje na WhatsApp u roku od par minuta. Vozač će te zvati 30 min pre polaska.</p>
+      <div class="confirm-ref">
+        Broj rezervacije:<br/><strong id="confirm-code">—</strong>
+      </div>
+      <a class="btn-whatsapp" id="whatsapp-link" target="_blank" rel="noopener">
+        💬 Pošalji potvrdu na WhatsApp
+      </a>
+      <a class="btn-secondary" href="tel:+381604264265">📞 Pozovi agenciju</a>
+      <button class="btn-text" id="close-confirm">Završi</button>
+    </div>
+  </div>
+
+  <!-- Routes section -->
+  <section class="routes" id="linije">
+    <div class="container">
+      <span class="eyebrow center">Najtraženije linije</span>
+      <h2 class="section-h2">Beograd → Hrvatska</h2>
+      <p class="section-sub">Dnevni polasci. Cena je po osobi.</p>
+      <div class="route-grid" id="route-grid"></div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how" id="kako">
+    <div class="container">
+      <span class="eyebrow center">Kako funkcioniše</span>
+      <h2 class="section-h2">Tri koraka. Bez stresa.</h2>
+      <div class="how-grid">
+        <div class="how-step">
+          <div class="how-num">1</div>
+          <h3>Rezerviši online</h3>
+          <p>Izaberi destinaciju, datum i broj putnika. Vidiš tačan broj slobodnih mesta.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-num">2</div>
+          <h3>Dobiješ potvrdu</h3>
+          <p>Potvrda stiže na WhatsApp ili telefonom. Vozač zove 30 min pre polaska.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-num">3</div>
+          <h3>Vozimo te do vrata</h3>
+          <p>Preuzimanje na tvojoj adresi. Direktna vožnja, bez presedanja. Plaćaš kod vozača.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social proof -->
+  <section class="proof">
+    <div class="container proof-grid">
+      <div class="stat"><strong>4.9★</strong><span>197 Google recenzija</span></div>
+      <div class="stat"><strong>1000+</strong><span>zadovoljnih putnika</span></div>
+      <div class="stat"><strong>10+</strong><span>godina iskustva</span></div>
+      <div class="stat"><strong>24/7</strong><span>dostupnost</span></div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <span class="eyebrow center">Najčešća pitanja</span>
+      <h2 class="section-h2">Pitanja pre rezervacije</h2>
+      <div class="faq-list">
+        <details>
+          <summary>Kako se plaća?</summary>
+          <p>Plaćaš direktno kod vozača — gotovinski u EUR ili u dinarima po srednjem kursu NBS. Bez avansa, bez online plaćanja.</p>
+        </details>
+        <details>
+          <summary>Mogu li da otkažem rezervaciju?</summary>
+          <p>Da. Besplatno otkazivanje do 24h pre polaska. Pozovi nas ili odgovori na WhatsApp poruku sa potvrdom.</p>
+        </details>
+        <details>
+          <summary>Da li vozite decu?</summary>
+          <p>Naravno. Auto-sedište obezbeđujemo na zahtev — napomeni u rezervaciji uzrast deteta.</p>
+        </details>
+        <details>
+          <summary>Koliko prtljaga mogu da ponesem?</summary>
+          <p>Jedan kofer + ručni prtljag su standardno uključeni. Veći prtljag i sportsku opremu dogovorimo unapred.</p>
+        </details>
+        <details>
+          <summary>Da li polazak može da bude u drugo vreme?</summary>
+          <p>Standardni polazak za hrvatske linije je u 23:00 (preko noći). Za grupe od 4+ putnika dogovaramo i druge termine.</p>
+        </details>
+        <details>
+          <summary>Kakvi su kombiji?</summary>
+          <p>Novije generacije, sa klimom i WiFi-jem, do 8 putnika. Licencirani vozači sa višegodišnjim iskustvom.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer / Contact -->
+  <footer class="foot">
+    <div class="container foot-grid">
+      <div>
+        <div class="brand">
+          <span class="brand-mark">DT</span>
+          <span class="brand-name">Dream Team Travel</span>
+        </div>
+        <p class="foot-tag">Kombi prevoz putnika · Od vrata do vrata</p>
+      </div>
+      <div>
+        <h4>Kontakt</h4>
+        <p><a href="tel:+381604264265">+381 60 426 4265</a></p>
+        <p><a href="tel:+381634263430">+381 63 426 343</a></p>
+        <p><a href="mailto:office@dreamteamtravel.rs">office@dreamteamtravel.rs</a></p>
+      </div>
+      <div>
+        <h4>Pratite nas</h4>
+        <p><a href="https://www.instagram.com/dream.teamtravel/" target="_blank" rel="noopener">Instagram</a></p>
+        <p><a href="https://www.facebook.com/Dream.Team.Travel.Kombi.Prevoz/" target="_blank" rel="noopener">Facebook</a></p>
+      </div>
+    </div>
+    <p class="copyright">© Dream Team Travel · Online rezervacija — demo verzija</p>
+  </footer>
+
+  <!-- Sticky mobile CTA -->
+  <a href="#booking" class="mobile-cta">Rezerviši mesto →</a>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
