@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0b3b5b" />
-  <title>Dream Team Travel — Online rezervacija kombi prevoza</title>
+  <title>Dream Team Travel — Kombi prevoz Beograd ↔ Hrvatska</title>
   <meta name="description" content="Brza online rezervacija kombi prevoza iz Beograda za Hrvatsku, Sloveniju i šire. Od vrata do vrata, plaćanje kod vozača." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -20,6 +20,8 @@
     <span>Plaćanje kod vozača</span>
     <span class="dot hide-sm"></span>
     <span class="hide-sm">Besplatna izmena rezervacije</span>
+    <span class="dot hide-sm"></span>
+    <span class="hide-sm">10+ godina iskustva</span>
   </div>
 
   <!-- Nav -->
@@ -30,74 +32,113 @@
     </a>
     <nav class="nav-links">
       <a href="#linije">Linije</a>
-      <a href="#kako">Kako funkcioniše</a>
+      <a href="#kombiji">Kombiji</a>
+      <a href="#zasto">Zašto mi</a>
+      <a href="#recenzije">Recenzije</a>
       <a href="#" id="open-lookup">Moje rezervacije</a>
       <a href="admin.html" class="nav-admin" target="_blank" rel="noopener">Admin</a>
       <a href="tel:+381604264265" class="nav-phone">📞 060 426 4265</a>
     </nav>
   </header>
 
-  <!-- Hero / Booking entry -->
+  <!-- Hero -->
   <section class="hero">
-    <div class="hero-text">
-      <span class="eyebrow">Kombi prevoz Beograd ↔ Hrvatska</span>
-      <h1>Rezerviši mesto<br/>za 60 sekundi.</h1>
-      <p class="hero-sub">Polasci svaki dan. Od adrese u Beogradu do adrese u Hrvatskoj. Bez presedanja.</p>
-      <ul class="hero-points">
-        <li><span class="check">✓</span> Vidiš slobodna mesta odmah</li>
-        <li><span class="check">✓</span> Plaćaš kod vozača (gotovina ili kartica)</li>
-        <li><span class="check">✓</span> Potvrda na WhatsApp / Viber</li>
-      </ul>
+    <!-- pozadinski dekor: gradient mora + valovi -->
+    <div class="hero-decor" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <svg class="hero-wave" viewBox="0 0 1440 200" preserveAspectRatio="none">
+        <path d="M0,80 C240,150 480,20 720,80 C960,140 1200,30 1440,80 L1440,200 L0,200 Z" fill="rgba(255,255,255,.06)"/>
+        <path d="M0,120 C240,180 480,60 720,120 C960,180 1200,80 1440,120 L1440,200 L0,200 Z" fill="rgba(255,255,255,.04)"/>
+      </svg>
     </div>
 
-    <!-- Booking card -->
-    <div class="booking-card" id="booking">
-      <div class="bc-header">
-        <h2>Pronađi svoj polazak</h2>
-        <p>Beograd je polazna tačka — kombi te preuzima na adresi.</p>
-      </div>
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="eyebrow eyebrow-on-dark">🇷🇸 → 🇭🇷 · Beograd ↔ Hrvatska</span>
+        <h1>Stigni u Hrvatsku <span class="h1-accent">bez stresa.</span></h1>
+        <p class="hero-sub">Kombi prevoz od vrata u Beogradu do hotela u Istri, Dalmaciji ili Kvarneru. Polasci svaki dan — najčešće u 23:00 da budeš na moru ujutru.</p>
 
-      <form id="search-form" class="bc-form" novalidate>
-        <label class="field">
-          <span>Destinacija u Hrvatskoj</span>
-          <select id="route" required></select>
-        </label>
+        <ul class="hero-points">
+          <li><span class="check">✓</span> Rezervišeš online za 60 sekundi</li>
+          <li><span class="check">✓</span> Vidiš tačan broj slobodnih mesta odmah</li>
+          <li><span class="check">✓</span> Plaćaš kod vozača — gotovina ili kartica</li>
+          <li><span class="check">✓</span> Potvrda na WhatsApp · vozač zove 30 min pre polaska</li>
+        </ul>
 
-        <div class="grid-2">
-          <label class="field">
-            <span>Datum polaska</span>
-            <input type="date" id="date" required />
-          </label>
-          <label class="field">
-            <span>Putnika</span>
-            <select id="pax" required>
-              <option value="1">1 putnik</option>
-              <option value="2">2 putnika</option>
-              <option value="3">3 putnika</option>
-              <option value="4">4 putnika</option>
-              <option value="5">5 putnika</option>
-              <option value="6">6 putnika</option>
-              <option value="7">7 putnika</option>
-              <option value="8">8 putnika</option>
-            </select>
-          </label>
+        <div class="hero-cta-row">
+          <a href="#booking" class="btn-primary btn-lg btn-pulse">Rezerviši mesto →</a>
+          <a href="tel:+381604264265" class="btn-ghost-dark">📞 060 426 4265</a>
         </div>
 
-        <fieldset class="trip-type">
-          <legend class="sr-only">Tip puta</legend>
-          <label><input type="radio" name="tripType" value="oneWay" checked /><span>U jednom pravcu</span></label>
-          <label><input type="radio" name="tripType" value="return" /><span>Povratna karta <em>(ušteda ~10€)</em></span></label>
-        </fieldset>
+        <div class="hero-mini-proof">
+          <div class="avatar-stack">
+            <span style="background:#ffb86c">M</span>
+            <span style="background:#7ed7ff">J</span>
+            <span style="background:#f5b740">N</span>
+            <span style="background:#a8e6a3">A</span>
+          </div>
+          <div>
+            <strong>1000+ zadovoljnih putnika</strong>
+            <small>★★★★★ 4.9 · 197 Google recenzija</small>
+          </div>
+        </div>
+      </div>
 
-        <button class="btn-primary btn-lg" type="submit">
-          Prikaži slobodne polaske →
-        </button>
-        <p class="reassure">Bez plaćanja online · Otkazivanje besplatno 24h pre polaska</p>
-      </form>
+      <!-- Booking card -->
+      <div class="booking-card" id="booking">
+        <div class="bc-header">
+          <h2>Pronađi svoj polazak</h2>
+          <p>Beograd je polazna tačka — kombi te preuzima na adresi.</p>
+        </div>
+
+        <form id="search-form" class="bc-form" novalidate>
+          <label class="field">
+            <span>Destinacija u Hrvatskoj</span>
+            <select id="route" required></select>
+          </label>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Datum polaska</span>
+              <input type="date" id="date" required />
+            </label>
+            <label class="field">
+              <span>Putnika</span>
+              <select id="pax" required>
+                <option value="1">1 putnik</option>
+                <option value="2">2 putnika</option>
+                <option value="3">3 putnika</option>
+                <option value="4">4 putnika</option>
+                <option value="5">5 putnika</option>
+                <option value="6">6 putnika</option>
+                <option value="7">7 putnika</option>
+                <option value="8">8 putnika</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="trip-type">
+            <legend class="sr-only">Tip puta</legend>
+            <label><input type="radio" name="tripType" value="oneWay" checked /><span>U jednom pravcu</span></label>
+            <label><input type="radio" name="tripType" value="return" /><span>Povratna karta <em>(ušteda ~10€)</em></span></label>
+          </fieldset>
+
+          <button class="btn-primary btn-lg" type="submit">
+            Prikaži slobodne polaske →
+          </button>
+          <p class="reassure">Bez plaćanja online · Otkazivanje besplatno 24h pre polaska</p>
+        </form>
+      </div>
     </div>
   </section>
 
-  <!-- Booking flow (skriveno, otvara se nakon submita) -->
+  <!-- Live activity ticker -->
+  <section class="activity-bar" aria-label="Skorašnja aktivnost">
+    <span class="ticker-label">UŽIVO ·</span>
+    <div class="ticker-track" id="activity-ticker">Sistem aktivan</div>
+  </section>
+
+  <!-- Booking flow (otvara se nakon submita) -->
   <section class="flow" id="flow" hidden>
     <div class="flow-inner">
       <div class="flow-header">
@@ -112,18 +153,14 @@
         <div class="flow-summary" id="flow-summary"></div>
       </div>
 
-      <!-- KORAK 1: Izbor polaska -->
       <div class="flow-step" id="step-1">
         <h2>Izaberi datum i polazak</h2>
         <p class="muted">Klikni na dan u kalendaru — vidi tačan broj slobodnih mesta. Kombi ima 8 mesta.</p>
-
         <div class="week-calendar" id="week-calendar"></div>
-
         <div class="day-label">Polasci za <strong id="step-1-date"></strong></div>
         <div class="departure-list" id="departure-list"></div>
       </div>
 
-      <!-- KORAK 2: Pickup + putnici -->
       <div class="flow-step" id="step-2" hidden>
         <h2>Gde te preuzimamo?</h2>
         <p class="muted">Vozač dolazi na adresu u Beogradu. Bez dodatne naplate.</p>
@@ -169,25 +206,20 @@
         <button class="btn-primary btn-lg" id="to-step-3">Pregled rezervacije →</button>
       </div>
 
-      <!-- KORAK 3: Pregled + potvrda -->
       <div class="flow-step" id="step-3" hidden>
         <h2>Pregled rezervacije</h2>
         <p class="muted">Pre potvrde proveri detalje. Plaćaš kod vozača.</p>
-
         <div class="review-card" id="review-card"></div>
-
         <div class="price-box">
           <div class="row"><span>Cena po osobi</span><span id="price-per"></span></div>
           <div class="row"><span>Broj putnika</span><span id="price-pax"></span></div>
           <div class="row total"><span>Ukupno</span><span id="price-total"></span></div>
           <small class="muted">Plaćanje kod vozača · EUR ili dinari po srednjem kursu</small>
         </div>
-
         <label class="checkbox">
           <input type="checkbox" id="terms" />
           <span>Slažem se sa <a href="#" onclick="return false">uslovima prevoza i otkazivanjem</a>.</span>
         </label>
-
         <button class="btn-primary btn-lg" id="confirm">Potvrdi rezervaciju</button>
         <p class="reassure">Bez online plaćanja · Slobodno otkazivanje 24h pre polaska</p>
       </div>
@@ -211,36 +243,235 @@
     </div>
   </div>
 
-  <!-- Routes section -->
+  <!-- Featured destinations -->
   <section class="routes" id="linije">
     <div class="container">
-      <span class="eyebrow center">Najtraženije linije</span>
-      <h2 class="section-h2">Beograd → Hrvatska</h2>
-      <p class="section-sub">Dnevni polasci. Cena je po osobi.</p>
-      <div class="route-grid" id="route-grid"></div>
+      <div class="section-head">
+        <span class="eyebrow center">Najtraženije linije</span>
+        <h2 class="section-h2 fancy">Hrvatska — domaća priroda na <em>našem</em> kombiju</h2>
+        <p class="section-sub">Dnevni polasci iz Beograda. Cena je <strong>po osobi</strong>. Klikni grad da popuniš formu.</p>
+      </div>
+      <div class="route-grid-rich" id="route-grid"></div>
+
+      <div class="all-routes-table">
+        <h3>Sve hrvatske destinacije i cene</h3>
+        <div class="ar-grid">
+          <div><strong>Zagreb</strong><span>€60 <small>· €110 povr.</small></span></div>
+          <div><strong>Karlovac</strong><span>€70 <small>· €130 povr.</small></span></div>
+          <div><strong>Rijeka</strong><span>€75 <small>· €140 povr.</small></span></div>
+          <div><strong>Opatija</strong><span>€75 <small>· €140 povr.</small></span></div>
+          <div><strong>Pula</strong><span>€85 <small>· €160 povr.</small></span></div>
+          <div><strong>Rovinj</strong><span>€85 <small>· €160 povr.</small></span></div>
+          <div><strong>Poreč</strong><span>€85 <small>· €160 povr.</small></span></div>
+          <div><strong>Umag</strong><span>€85 <small>· €160 povr.</small></span></div>
+          <div><strong>Novigrad</strong><span>€85 <small>· €160 povr.</small></span></div>
+          <div><strong>Medulin</strong><span>€85 <small>· €160 povr.</small></span></div>
+          <div><strong>Split</strong><span>€90 <small>· €170 povr.</small></span></div>
+          <div><strong>Zadar</strong><span>€90 <small>· €170 povr.</small></span></div>
+        </div>
+        <p class="ar-foot">Cena uključuje door-to-door uslugu, klimu, WiFi i prtljag (1 kofer + ručni).</p>
+      </div>
     </div>
   </section>
 
   <!-- How it works -->
   <section class="how" id="kako">
     <div class="container">
-      <span class="eyebrow center">Kako funkcioniše</span>
-      <h2 class="section-h2">Tri koraka. Bez stresa.</h2>
+      <div class="section-head">
+        <span class="eyebrow center">Kako funkcioniše</span>
+        <h2 class="section-h2 fancy">Tri koraka. <em>Bez stresa.</em></h2>
+      </div>
       <div class="how-grid">
         <div class="how-step">
           <div class="how-num">1</div>
+          <div class="how-ico">📅</div>
           <h3>Rezerviši online</h3>
-          <p>Izaberi destinaciju, datum i broj putnika. Vidiš tačan broj slobodnih mesta.</p>
+          <p>Izaberi destinaciju, datum i broj putnika. Vidiš tačan broj slobodnih mesta po polasku — bez čekanja na poziv.</p>
         </div>
         <div class="how-step">
           <div class="how-num">2</div>
+          <div class="how-ico">💬</div>
           <h3>Dobiješ potvrdu</h3>
-          <p>Potvrda stiže na WhatsApp ili telefonom. Vozač zove 30 min pre polaska.</p>
+          <p>Potvrda stiže na WhatsApp / Viber u par minuta. Dan pre polaska dobiješ podsetnik. Vozač zove 30 min ranije.</p>
         </div>
         <div class="how-step">
           <div class="how-num">3</div>
+          <div class="how-ico">🚐</div>
           <h3>Vozimo te do vrata</h3>
-          <p>Preuzimanje na tvojoj adresi. Direktna vožnja, bez presedanja. Plaćaš kod vozača.</p>
+          <p>Preuzimanje na tvojoj adresi. Direktna vožnja bez presedanja. Plaćaš kod vozača — gotovina ili kartica.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Naši kombiji -->
+  <section class="fleet" id="kombiji">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow center">Naši kombiji</span>
+        <h2 class="section-h2 fancy">Putuješ kao u <em>privatnom</em> taksiju, plaćaš kao bus.</h2>
+        <p class="section-sub">Mercedes Vito i Volkswagen Crafter, novije generacije, maks. 8 putnika.</p>
+      </div>
+
+      <div class="fleet-grid">
+        <div class="fleet-img" aria-hidden="true">
+          <div class="fleet-illustration">
+            <div class="fi-sun"></div>
+            <div class="fi-road"></div>
+            <div class="fi-van">
+              <div class="fi-van-body"></div>
+              <div class="fi-van-window"></div>
+              <div class="fi-van-wheel fi-w1"></div>
+              <div class="fi-van-wheel fi-w2"></div>
+              <div class="fi-van-headlight"></div>
+            </div>
+            <div class="fi-cloud fi-c1">☁</div>
+            <div class="fi-cloud fi-c2">☁</div>
+          </div>
+        </div>
+
+        <div class="fleet-features">
+          <div class="ff-row">
+            <div class="ff-card"><span class="ff-ico">❄️</span><strong>Klima</strong><small>Automatski regulisana, 22°C</small></div>
+            <div class="ff-card"><span class="ff-ico">📶</span><strong>WiFi</strong><small>4G router u svakom kombiju</small></div>
+            <div class="ff-card"><span class="ff-ico">🔌</span><strong>USB punjenje</strong><small>Po sedištu</small></div>
+            <div class="ff-card"><span class="ff-ico">🪑</span><strong>Kožna sedišta</strong><small>Naslon za glavu i ruke</small></div>
+            <div class="ff-card"><span class="ff-ico">🧳</span><strong>Prtljag</strong><small>1 kofer + ručni standardno</small></div>
+            <div class="ff-card"><span class="ff-ico">👶</span><strong>Auto-sedište</strong><small>Na zahtev, bez doplate</small></div>
+            <div class="ff-card"><span class="ff-ico">🌙</span><strong>Noćna vožnja</strong><small>Stižeš odmoran ujutru</small></div>
+            <div class="ff-card"><span class="ff-ico">🛡️</span><strong>Licencirano</strong><small>Vozači sa 5-15 god. iskustva</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Zašto mi -->
+  <section class="why" id="zasto">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow center">Zašto Dream Team Travel</span>
+        <h2 class="section-h2 fancy">Šta dobijaš što kod <em>drugih</em> ne dobijaš.</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-ico" style="background:#fef0d6;color:#d99a1f">🚪</div>
+          <h3>Od vrata do vrata</h3>
+          <p>Bez autobuskih stanica, bez taksija u stranom gradu. Kombi te preuzima i ostavlja na adresi.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico" style="background:#e0f2f0;color:#1aa179">⚡</div>
+          <h3>Brže od autobusa</h3>
+          <p>Direktna vožnja, bez stajanja na svakoj stanici. Beograd → Zagreb za 6h, ne 10h.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico" style="background:#e0eaf2;color:#134e72">💰</div>
+          <h3>Plaćaš kod vozača</h3>
+          <p>Bez avansa, bez online plaćanja. Gotovina u EUR ili dinari po srednjem kursu.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico" style="background:#fde8e6;color:#d4524a">📞</div>
+          <h3>Dostupni 24/7</h3>
+          <p>WhatsApp, Viber, telefon, web — kako god ti odgovara. Odgovor u 10 min.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico" style="background:#f0e6f5;color:#8b56b3">👨‍✈️</div>
+          <h3>Iskusni vozači</h3>
+          <p>Svaki vozač ima 5-15 godina iskustva na rutama ka moru. Govore engleski.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico" style="background:#e8f4f8;color:#0a6c8c">🔄</div>
+          <h3>Fleksibilno otkazivanje</h3>
+          <p>Besplatno otkazivanje 24h pre polaska. Promena datuma kad god ti zatreba.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mapa ruta -->
+  <section class="map-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow center">Mapa ruta</span>
+        <h2 class="section-h2 fancy">Sve hrvatske obale — sa <em>jednog</em> polaska.</h2>
+      </div>
+      <div class="map-wrap">
+        <svg viewBox="0 0 800 420" class="route-map" xmlns="http://www.w3.org/2000/svg" aria-label="Mapa ruta">
+          <!-- Land -->
+          <defs>
+            <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#cfe6f0"/>
+              <stop offset="100%" stop-color="#9ec9d9"/>
+            </linearGradient>
+            <linearGradient id="landG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#eef3e8"/>
+              <stop offset="100%" stop-color="#d9e4cf"/>
+            </linearGradient>
+            <filter id="dropS" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0a2540" flood-opacity=".15"/>
+            </filter>
+          </defs>
+
+          <rect width="800" height="420" fill="url(#seaG)"/>
+          <!-- Pojednostavljena kopno linija -->
+          <path d="M0,40 L800,40 L800,100 C720,120 680,160 600,160 C540,160 500,200 440,190 C380,180 320,220 260,240 C220,250 180,260 140,280 C100,300 80,340 0,340 Z" fill="url(#landG)"/>
+          <!-- More -->
+          <path d="M250,260 C300,290 380,310 460,300 C540,290 600,320 700,310" stroke="#7fb3c7" stroke-width="2" fill="none" stroke-dasharray="3 4" opacity=".5"/>
+
+          <!-- Linije rute (Beograd → grad) -->
+          <g class="map-routes">
+            <path d="M620,110 Q480,120 360,170" stroke="#f5b740" stroke-width="2.5" fill="none" stroke-dasharray="5 4" />
+            <path d="M620,110 Q480,140 290,200" stroke="#f5b740" stroke-width="2.5" fill="none" stroke-dasharray="5 4" />
+            <path d="M620,110 Q500,160 230,220" stroke="#f5b740" stroke-width="2.5" fill="none" stroke-dasharray="5 4" />
+            <path d="M620,110 Q550,180 360,260" stroke="#f5b740" stroke-width="2.5" fill="none" stroke-dasharray="5 4" />
+            <path d="M620,110 Q540,220 420,290" stroke="#f5b740" stroke-width="2.5" fill="none" stroke-dasharray="5 4" />
+            <path d="M620,110 Q540,260 460,330" stroke="#f5b740" stroke-width="2.5" fill="none" stroke-dasharray="5 4" />
+          </g>
+
+          <!-- Beograd (polazna) -->
+          <g class="map-city map-origin">
+            <circle cx="620" cy="110" r="12" fill="#0a2540" filter="url(#dropS)"/>
+            <circle cx="620" cy="110" r="5" fill="#f5b740"/>
+            <text x="620" y="95" text-anchor="middle" class="city-name origin">Beograd</text>
+            <text x="620" y="135" text-anchor="middle" class="city-sub">polazak</text>
+          </g>
+
+          <!-- Destinacije -->
+          <g class="map-city">
+            <circle cx="360" cy="170" r="8" fill="#fff" stroke="#0a2540" stroke-width="2"/>
+            <text x="360" y="158" text-anchor="middle" class="city-name">Zagreb</text>
+            <text x="360" y="186" text-anchor="middle" class="city-sub">€60</text>
+          </g>
+          <g class="map-city">
+            <circle cx="290" cy="200" r="8" fill="#fff" stroke="#0a2540" stroke-width="2"/>
+            <text x="280" y="218" class="city-name">Karlovac</text>
+            <text x="280" y="234" class="city-sub">€70</text>
+          </g>
+          <g class="map-city">
+            <circle cx="230" cy="220" r="8" fill="#fff" stroke="#0a2540" stroke-width="2"/>
+            <text x="195" y="240" class="city-name">Rijeka/Opatija</text>
+            <text x="220" y="256" class="city-sub">€75</text>
+          </g>
+          <g class="map-city">
+            <circle cx="160" cy="240" r="9" fill="#f5b740" stroke="#0a2540" stroke-width="2"/>
+            <text x="140" y="226" class="city-name">Istra</text>
+            <text x="120" y="262" class="city-sub">Pula/Rovinj €85</text>
+          </g>
+          <g class="map-city">
+            <circle cx="420" cy="290" r="8" fill="#fff" stroke="#0a2540" stroke-width="2"/>
+            <text x="420" y="310" text-anchor="middle" class="city-name">Zadar</text>
+            <text x="420" y="326" text-anchor="middle" class="city-sub">€90</text>
+          </g>
+          <g class="map-city">
+            <circle cx="460" cy="330" r="8" fill="#fff" stroke="#0a2540" stroke-width="2"/>
+            <text x="460" y="350" text-anchor="middle" class="city-name">Split</text>
+            <text x="460" y="366" text-anchor="middle" class="city-sub">€90</text>
+          </g>
+        </svg>
+        <div class="map-legend">
+          <div><span class="lg-dot lg-belgrade"></span> Beograd · polazak svaki dan u 23:00</div>
+          <div><span class="lg-dot lg-route"></span> Direktna vožnja, bez presedanja</div>
+          <div><span class="lg-dot lg-priority"></span> Najtraženija ruta: Istra (Pula, Rovinj, Poreč)</div>
         </div>
       </div>
     </div>
@@ -256,11 +487,30 @@
     </div>
   </section>
 
+  <!-- Testimonials -->
+  <section class="testimonials-section" id="recenzije">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow center">Šta kažu putnici</span>
+        <h2 class="section-h2 fancy">Ljudi koji su već <em>stigli</em> sa nama.</h2>
+        <p class="section-sub">Stvarne recenzije sa Google-a — neke parafrazirane radi sažetosti.</p>
+      </div>
+      <div class="testimonials-grid" id="testimonials"></div>
+      <div class="testimonials-cta">
+        <a href="https://www.google.com/search?q=Dream+Team+Travel+Beograd" target="_blank" rel="noopener" class="btn-text-arrow">
+          Pogledaj sve Google recenzije →
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- FAQ -->
   <section class="faq" id="faq">
     <div class="container">
-      <span class="eyebrow center">Najčešća pitanja</span>
-      <h2 class="section-h2">Pitanja pre rezervacije</h2>
+      <div class="section-head">
+        <span class="eyebrow center">Najčešća pitanja</span>
+        <h2 class="section-h2 fancy">Pitanja <em>pre</em> rezervacije.</h2>
+      </div>
       <div class="faq-list">
         <details>
           <summary>Kako se plaća?</summary>
@@ -268,29 +518,51 @@
         </details>
         <details>
           <summary>Mogu li da otkažem rezervaciju?</summary>
-          <p>Da. Besplatno otkazivanje do 24h pre polaska. Pozovi nas ili odgovori na WhatsApp poruku sa potvrdom.</p>
+          <p>Da. Besplatno otkazivanje do 24h pre polaska. Klikni "Moje rezervacije" gore u meniju, unesi telefon i otkaži jednim klikom.</p>
         </details>
         <details>
           <summary>Da li vozite decu?</summary>
-          <p>Naravno. Auto-sedište obezbeđujemo na zahtev — napomeni u rezervaciji uzrast deteta.</p>
+          <p>Naravno. Auto-sedište obezbeđujemo na zahtev bez doplate — napomeni u rezervaciji uzrast deteta. Mlađa deca putuju besplatno.</p>
         </details>
         <details>
           <summary>Koliko prtljaga mogu da ponesem?</summary>
-          <p>Jedan kofer + ručni prtljag su standardno uključeni. Veći prtljag i sportsku opremu dogovorimo unapred.</p>
+          <p>Jedan kofer + ručni prtljag su standardno uključeni. Veći prtljag, skije ili biciklo dogovorimo unapred bez problema.</p>
         </details>
         <details>
           <summary>Da li polazak može da bude u drugo vreme?</summary>
-          <p>Standardni polazak za hrvatske linije je u 23:00 (preko noći). Za grupe od 4+ putnika dogovaramo i druge termine.</p>
+          <p>Standardni polazak za hrvatske linije je u 23:00 (preko noći — stižeš ujutru i imaš ceo dan). Vikendima i za grupe od 4+ putnika imamo i jutarnji polazak u 07:00.</p>
         </details>
         <details>
           <summary>Kakvi su kombiji?</summary>
-          <p>Novije generacije, sa klimom i WiFi-jem, do 8 putnika. Licencirani vozači sa višegodišnjim iskustvom.</p>
+          <p>Novije generacije Mercedes Vito ili Volkswagen Crafter, sa klimom, WiFi-jem, USB punjačima, do 8 putnika. Vozači su licencirani sa višegodišnjim iskustvom.</p>
+        </details>
+        <details>
+          <summary>Šta ako se desi nešto na putu?</summary>
+          <p>Vozač ima 24/7 vezu sa dispečerom. Imamo rezervno vozilo u Beogradu i Zagrebu — u retkom slučaju kvara, drugi kombi stiže za 30 min.</p>
+        </details>
+        <details>
+          <summary>Da li radi povratna karta?</summary>
+          <p>Da, povratna karta je oko 10€ jeftinija od dva odvojena pravca. Datum povratka možeš odrediti kasnije — zovi nas 24h pre.</p>
         </details>
       </div>
     </div>
   </section>
 
-  <!-- Footer / Contact -->
+  <!-- CTA band -->
+  <section class="cta-band">
+    <div class="container cta-inner">
+      <div>
+        <h2>Spreman za put?</h2>
+        <p>Rezervacija traje 60 sekundi. Plaćaš tek kod vozača.</p>
+      </div>
+      <div class="cta-actions">
+        <a href="#booking" class="btn-primary btn-lg">Rezerviši mesto →</a>
+        <a href="tel:+381604264265" class="btn-ghost-dark">📞 060 426 4265</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer class="foot">
     <div class="container foot-grid">
       <div>
@@ -298,7 +570,12 @@
           <span class="brand-mark">DT</span>
           <span class="brand-name">Dream Team Travel</span>
         </div>
-        <p class="foot-tag">Kombi prevoz putnika · Od vrata do vrata</p>
+        <p class="foot-tag">Kombi prevoz putnika · Od vrata do vrata · 10+ godina iskustva</p>
+        <div class="foot-socials">
+          <a href="https://www.instagram.com/dream.teamtravel/" target="_blank" rel="noopener" aria-label="Instagram">📷</a>
+          <a href="https://www.facebook.com/Dream.Team.Travel.Kombi.Prevoz/" target="_blank" rel="noopener" aria-label="Facebook">📘</a>
+          <a href="https://wa.me/381604264265" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+        </div>
       </div>
       <div>
         <h4>Kontakt</h4>
@@ -310,14 +587,21 @@
         <h4>Brze radnje</h4>
         <p><a href="#" id="open-lookup-foot">🔍 Pronađi moju rezervaciju</a></p>
         <p><a href="admin.html" target="_blank" rel="noopener">🔐 Admin panel</a></p>
-        <p><a href="https://www.instagram.com/dream.teamtravel/" target="_blank" rel="noopener">Instagram</a></p>
-        <p><a href="https://www.facebook.com/Dream.Team.Travel.Kombi.Prevoz/" target="_blank" rel="noopener">Facebook</a></p>
+        <p><a href="#linije">Sve linije</a></p>
+        <p><a href="#faq">Pitanja i odgovori</a></p>
+      </div>
+      <div>
+        <h4>Top destinacije</h4>
+        <p><a href="#linije">Beograd → Pula</a></p>
+        <p><a href="#linije">Beograd → Rovinj</a></p>
+        <p><a href="#linije">Beograd → Zagreb</a></p>
+        <p><a href="#linije">Beograd → Split</a></p>
       </div>
     </div>
-    <p class="copyright">© Dream Team Travel · Online rezervacija — demo verzija</p>
+    <p class="copyright">© Dream Team Travel · Online rezervacija — demo verzija · Aplikaciju izradio tim za digital</p>
   </footer>
 
-  <!-- "Moje rezervacije" lookup modal -->
+  <!-- Lookup modal -->
   <div class="confirm-overlay" id="lookup-overlay" hidden>
     <div class="confirm-modal lookup-modal">
       <h2>Moje rezervacije</h2>
