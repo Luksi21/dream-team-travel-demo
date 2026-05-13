@@ -1,15 +1,14 @@
-// Dream Team Travel — Booking flow
+// Dream Team Travel — Booking flow (customer)
 
 const { COMPANY, ROUTES,
   seatsAvailable, getDeparturesFor, findRoute, primaryRoutes, groupByRegion
 } = window.DTT;
 
-// ===== Stanje rezervacije =====
 const state = {
   routeId: null,
   date: null,
   pax: 1,
-  tripType: "oneWay", // ili "return"
+  tripType: "oneWay",
   time: null,
   pickup: "",
   dropoff: "",
@@ -20,8 +19,8 @@ const state = {
   whatsappOpt: true,
 };
 
-// ===== Init =====
 document.addEventListener("DOMContentLoaded", () => {
+  window.Store._reseed(); // osiguraj seed nakon što je DTT učitan
   populateRouteSelect();
   setDefaultDate();
   renderRouteGrid();
@@ -29,6 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
   bindFlowControls();
   bindStep2();
   bindStep3();
+  bindLookup();
+
+  // Live re-render kada admin/drugi tab promeni rezervacije
+  window.Store.onChange(() => {
+    if (!document.getElementById("flow").hidden && state._step === 1) {
+      renderStep1();
+    }
+  });
 });
 
 // ===== Helpers =====
@@ -37,11 +44,9 @@ function fmtDateLong(iso) {
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString("sr-RS", { weekday: "short", day: "numeric", month: "long" });
 }
-function genRef() {
-  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  let s = "DTT-";
-  for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
+function fmtDateShort(iso) {
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("sr-RS", { weekday: "short", day: "numeric", month: "short" });
 }
 function flagFor(country) {
   return { "Hrvatska":"🇭🇷","Slovenija":"🇸🇮","Italija":"🇮🇹",
@@ -95,10 +100,10 @@ function bindSearch() {
   });
 }
 
-// ===== Route grid (marketing sekcija) =====
+// ===== Route grid (marketing) =====
 function renderRouteGrid() {
   const grid = document.getElementById("route-grid");
-  const featured = primaryRoutes().slice(0, 6); // top 6 hrvatskih
+  const featured = primaryRoutes().slice(0, 6);
   grid.innerHTML = "";
   for (const r of featured) {
     const card = document.createElement("button");
@@ -121,7 +126,7 @@ function renderRouteGrid() {
   }
 }
 
-// ===== Flow open / step nav =====
+// ===== Flow =====
 function openFlow() {
   document.getElementById("flow").hidden = false;
   document.getElementById("flow").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -144,6 +149,7 @@ function bindFlowControls() {
   document.getElementById("flow-back").addEventListener("click", () => {
     if (state._step > 1) {
       goToStep(state._step - 1);
+      if (state._step === 1) renderStep1();
     } else {
       document.getElementById("flow").hidden = true;
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -157,14 +163,42 @@ function renderFlowSummary() {
   const tt = state.tripType === "return" ? "povratak" : "u jednom pravcu";
   document.getElementById("flow-summary").innerHTML = `
     <strong>Beograd → ${r.city}</strong>
-    ${fmtDateLong(state.date)} · ${state.pax} ${state.pax === 1 ? "putnik" : "putnika"} · ${tt}
+    ${state.pax} ${state.pax === 1 ? "putnik" : "putnika"} · ${tt}
   `;
 }
 
-// ===== STEP 1: Odabir polaska =====
+// ===== STEP 1: Kalendar + lista polazaka =====
 function renderStep1() {
-  const list = document.getElementById("departure-list");
   const route = findRoute(state.routeId);
+
+  // Kalendar — 7 narednih dana
+  const cal = document.getElementById("week-calendar");
+  cal.innerHTML = "";
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i);
+    const iso = d.toISOString().slice(0, 10);
+    const times = getDeparturesFor(iso);
+    const totalSeats = times.reduce((s, t) => s + seatsAvailable(state.routeId, iso, t), 0);
+    const enough = totalSeats >= state.pax;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cal-day" + (iso === state.date ? " active" : "") + (!enough ? " full" : "");
+    btn.disabled = !enough && iso !== state.date; // dozvoli klik radi prikaza poruke
+    btn.innerHTML = `
+      <span class="cal-dow">${d.toLocaleDateString("sr-RS", { weekday: "short" }).replace(".", "")}</span>
+      <span class="cal-day-num">${d.getDate()}</span>
+      <span class="cal-seats">${enough ? totalSeats + " slob." : "puno"}</span>
+    `;
+    btn.addEventListener("click", () => {
+      state.date = iso;
+      renderStep1();
+    });
+    cal.appendChild(btn);
+  }
+
+  // Lista polazaka za izabrani datum
+  const list = document.getElementById("departure-list");
   const times = getDeparturesFor(state.date);
   list.innerHTML = "";
 
@@ -206,17 +240,19 @@ function renderStep1() {
     list.appendChild(btn);
   }
 
-  // Ako nijedan polazak nema dovoljno mesta — info banner
+  // Banner ako nema mesta
   const anyOK = times.some(t => seatsAvailable(state.routeId, state.date, t) >= state.pax);
   if (!anyOK) {
     const banner = document.createElement("div");
-    banner.style.cssText = "padding:14px;border-radius:14px;background:rgba(212,82,74,.08);color:#7a2620;font-size:14px;margin-top:6px;";
+    banner.className = "empty-banner";
     banner.innerHTML = `Za ${state.pax} putnika nema dovoljno mesta na ovom datumu. Probaj drugi datum ili nas pozovi — često imamo dodatni kombi za grupe.`;
     list.appendChild(banner);
   }
+
+  document.getElementById("step-1-date").textContent = fmtDateLong(state.date);
 }
 
-// ===== STEP 2: Pickup + putnici =====
+// ===== STEP 2 =====
 function bindStep2() {
   document.getElementById("to-step-3").addEventListener("click", () => {
     const pickup = document.getElementById("pickup").value.trim();
@@ -238,7 +274,7 @@ function bindStep2() {
   });
 }
 
-// ===== STEP 3: Pregled =====
+// ===== STEP 3 =====
 function renderStep3() {
   const r = findRoute(state.routeId);
   const price = state.tripType === "return" ? r.return : r.oneWay;
@@ -267,7 +303,38 @@ function bindStep3() {
       alert("Molim te prihvati uslove prevoza.");
       return;
     }
-    showConfirmation();
+
+    // Provera kapaciteta TIK pre čuvanja (race-safe)
+    const seats = seatsAvailable(state.routeId, state.date, state.time);
+    if (seats < state.pax) {
+      alert("Žao nam je — neko je rezervisao mesta u međuvremenu. Vraćamo te na izbor polaska.");
+      goToStep(1); renderStep1();
+      return;
+    }
+
+    const r = findRoute(state.routeId);
+    const price = state.tripType === "return" ? r.return : r.oneWay;
+    const total = price * state.pax;
+
+    const booking = window.Store.create({
+      routeId: r.id,
+      routeCity: r.city,
+      date: state.date,
+      time: state.time,
+      pax: state.pax,
+      tripType: state.tripType,
+      totalPrice: total,
+      pickup: state.pickup,
+      dropoff: state.dropoff,
+      fullname: state.fullname,
+      phone: state.phone,
+      email: state.email,
+      note: state.note,
+      whatsappOpt: state.whatsappOpt,
+      source: "web",
+    });
+
+    showConfirmation(booking);
   });
 
   const closeModal = () => {
@@ -279,43 +346,100 @@ function bindStep3() {
   };
 
   document.getElementById("close-confirm").addEventListener("click", closeModal);
-
-  // klik na pozadinu modala
   document.getElementById("confirm-overlay").addEventListener("click", e => {
     if (e.target.id === "confirm-overlay") closeModal();
   });
-
-  // Esc taster
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && !document.getElementById("confirm-overlay").hidden) closeModal();
   });
 }
 
-function showConfirmation() {
-  const ref = genRef();
-  document.getElementById("confirm-code").textContent = ref;
+function showConfirmation(booking) {
+  document.getElementById("confirm-code").textContent = booking.ref;
 
-  const r = findRoute(state.routeId);
-  const price = state.tripType === "return" ? r.return : r.oneWay;
-  const total = price * state.pax;
   const msg = encodeURIComponent(
 `Zdravo Dream Team Travel!
-Imam rezervaciju ${ref}.
+Imam rezervaciju ${booking.ref}.
 
-Linija: Beograd → ${r.city}
-Datum: ${fmtDateLong(state.date)}
-Polazak: ${state.time}h
-Putnika: ${state.pax}
-Pickup: ${state.pickup}
-Dolazak: ${state.dropoff}
-Ime: ${state.fullname}
-Telefon: ${state.phone}
-Ukupno: ${fmtEur(total)} (plaćanje kod vozača)
+Linija: Beograd → ${booking.routeCity}
+Datum: ${fmtDateLong(booking.date)}
+Polazak: ${booking.time}h
+Putnika: ${booking.pax}
+Pickup: ${booking.pickup}
+Dolazak: ${booking.dropoff}
+Ime: ${booking.fullname}
+Telefon: ${booking.phone}
+Ukupno: ${fmtEur(booking.totalPrice)} (plaćanje kod vozača)
 
-${state.note ? "Napomena: " + state.note : ""}`);
+${booking.note ? "Napomena: " + booking.note : ""}`);
 
   document.getElementById("whatsapp-link").href =
     `https://wa.me/${COMPANY.whatsapp}?text=${msg}`;
 
   document.getElementById("confirm-overlay").hidden = false;
+}
+
+// ===== "Moje rezervacije" lookup =====
+function bindLookup() {
+  const openBtn = document.getElementById("open-lookup");
+  const overlay = document.getElementById("lookup-overlay");
+  const closeBtn = document.getElementById("close-lookup");
+  const form = document.getElementById("lookup-form");
+  const results = document.getElementById("lookup-results");
+
+  const open = () => { overlay.hidden = false; document.getElementById("lookup-phone").focus(); };
+  const close = () => { overlay.hidden = true; results.innerHTML = ""; form.reset(); };
+
+  openBtn?.addEventListener("click", e => { e.preventDefault(); open(); });
+  document.getElementById("open-lookup-foot")?.addEventListener("click", e => { e.preventDefault(); open(); });
+  closeBtn.addEventListener("click", close);
+  overlay.addEventListener("click", e => { if (e.target.id === "lookup-overlay") close(); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !overlay.hidden) close();
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const phone = document.getElementById("lookup-phone").value.trim();
+    if (!phone) return;
+    const list = window.Store.byPhone(phone);
+    renderLookupResults(list);
+  });
+
+  function renderLookupResults(list) {
+    if (!list.length) {
+      results.innerHTML = `<div class="muted" style="text-align:center;padding:20px;">Nema rezervacija za ovaj broj.</div>`;
+      return;
+    }
+    results.innerHTML = list.map(b => {
+      const cancelled = b.status === "cancelled";
+      const past = b.date < new Date().toISOString().slice(0, 10);
+      const within24h = (new Date(b.date + "T" + b.time + ":00") - new Date()) < 24 * 3600 * 1000;
+      const canCancel = !cancelled && !past && !within24h;
+      return `
+        <div class="lookup-item ${cancelled ? 'cancelled' : ''}">
+          <div class="li-head">
+            <strong>Beograd → ${b.routeCity}</strong>
+            <span class="status-pill ${cancelled ? 'cancel' : past ? 'done' : 'ok'}">
+              ${cancelled ? 'Otkazano' : past ? 'Završeno' : 'Aktivno'}
+            </span>
+          </div>
+          <div class="li-meta">
+            ${fmtDateShort(b.date)} · ${b.time}h · ${b.pax} ${b.pax===1?'putnik':'putnika'} · ${fmtEur(b.totalPrice)}
+          </div>
+          <div class="li-ref">Ref: <strong>${b.ref}</strong></div>
+          ${canCancel ? `<button class="btn-cancel" data-ref="${b.ref}">Otkaži rezervaciju</button>` : ""}
+        </div>
+      `;
+    }).join("");
+
+    results.querySelectorAll(".btn-cancel").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!confirm("Sigurno otkazujete rezervaciju?")) return;
+        window.Store.cancel(btn.dataset.ref);
+        const phone = document.getElementById("lookup-phone").value.trim();
+        renderLookupResults(window.Store.byPhone(phone));
+      });
+    });
+  }
 }

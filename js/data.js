@@ -56,19 +56,11 @@ const DEPARTURE_TIMES = {
   weekend: ["07:00", "23:00"],
 };
 
-// Generator slobodnih mesta — deterministički po (route, datum, vreme)
-// tako da rerender ne menja brojeve. Imitira pravi backend.
+// Slobodna mesta = MAX (8) − zauzeta (iz Store-a) − zatvoreno ručno (admin)
 function seatsAvailable(routeId, dateISO, time) {
-  const key = `${routeId}|${dateISO}|${time}`;
-  let hash = 0;
-  for (let i = 0; i < key.length; i++) {
-    hash = (hash * 31 + key.charCodeAt(i)) | 0;
-  }
-  // Distribucija: ~15% rasprodato, ~25% skoro puno (1-2), ostalo 3-8
-  const bucket = Math.abs(hash) % 100;
-  if (bucket < 15) return 0;
-  if (bucket < 40) return 1 + (Math.abs(hash >> 4) % 2); // 1-2
-  return 3 + (Math.abs(hash >> 4) % 6); // 3-8
+  if (!window.Store) return COMPANY.maxSeatsPerVehicle; // fallback
+  if (window.Store.isClosed(routeId, dateISO, time)) return 0;
+  return Math.max(0, COMPANY.maxSeatsPerVehicle - window.Store.taken(routeId, dateISO, time));
 }
 
 function getDeparturesFor(dateISO) {

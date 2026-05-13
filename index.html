@@ -31,7 +31,8 @@
     <nav class="nav-links">
       <a href="#linije">Linije</a>
       <a href="#kako">Kako funkcioniše</a>
-      <a href="#faq">Pitanja</a>
+      <a href="#" id="open-lookup">Moje rezervacije</a>
+      <a href="admin.html" class="nav-admin" target="_blank" rel="noopener">Admin</a>
       <a href="tel:+381604264265" class="nav-phone">📞 060 426 4265</a>
     </nav>
   </header>
@@ -113,8 +114,12 @@
 
       <!-- KORAK 1: Izbor polaska -->
       <div class="flow-step" id="step-1">
-        <h2>Slobodni polasci</h2>
-        <p class="muted">Izaberi polazak. Kombi ima maksimalno 8 mesta.</p>
+        <h2>Izaberi datum i polazak</h2>
+        <p class="muted">Klikni na dan u kalendaru — vidi tačan broj slobodnih mesta. Kombi ima 8 mesta.</p>
+
+        <div class="week-calendar" id="week-calendar"></div>
+
+        <div class="day-label">Polasci za <strong id="step-1-date"></strong></div>
         <div class="departure-list" id="departure-list"></div>
       </div>
 
@@ -302,7 +307,9 @@
         <p><a href="mailto:office@dreamteamtravel.rs">office@dreamteamtravel.rs</a></p>
       </div>
       <div>
-        <h4>Pratite nas</h4>
+        <h4>Brze radnje</h4>
+        <p><a href="#" id="open-lookup-foot">🔍 Pronađi moju rezervaciju</a></p>
+        <p><a href="admin.html" target="_blank" rel="noopener">🔐 Admin panel</a></p>
         <p><a href="https://www.instagram.com/dream.teamtravel/" target="_blank" rel="noopener">Instagram</a></p>
         <p><a href="https://www.facebook.com/Dream.Team.Travel.Kombi.Prevoz/" target="_blank" rel="noopener">Facebook</a></p>
       </div>
@@ -310,10 +317,28 @@
     <p class="copyright">© Dream Team Travel · Online rezervacija — demo verzija</p>
   </footer>
 
+  <!-- "Moje rezervacije" lookup modal -->
+  <div class="confirm-overlay" id="lookup-overlay" hidden>
+    <div class="confirm-modal lookup-modal">
+      <h2>Moje rezervacije</h2>
+      <p class="muted">Unesi telefonski broj sa kojim si rezervisao.</p>
+      <form id="lookup-form">
+        <label class="field">
+          <span>Telefon</span>
+          <input type="tel" id="lookup-phone" placeholder="+381 ..." />
+        </label>
+        <button class="btn-primary btn-lg" type="submit">Pronađi</button>
+      </form>
+      <div class="lookup-results" id="lookup-results"></div>
+      <button class="btn-text" id="close-lookup">Zatvori</button>
+    </div>
+  </div>
+
   <!-- Sticky mobile CTA -->
   <a href="#booking" class="mobile-cta">Rezerviši mesto →</a>
 
   <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

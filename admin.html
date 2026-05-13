@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a2540" />
+  <title>Admin · Dream Team Travel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="admin-body">
+
+  <!-- Login gate -->
+  <div class="admin-gate" id="admin-gate">
+    <div class="gate-card">
+      <div class="brand center">
+        <span class="brand-mark">DT</span>
+        <span class="brand-name">Dream Team Travel</span>
+      </div>
+      <h2>Agencija — prijava</h2>
+      <p class="muted">Demo lozinka: <code>demo</code></p>
+      <form id="login-form">
+        <label class="field">
+          <span>Lozinka</span>
+          <input type="password" id="admin-pass" autocomplete="current-password" />
+        </label>
+        <button type="submit" class="btn-primary btn-lg">Uđi u panel</button>
+      </form>
+      <p class="reassure"><a href="index.html">← Nazad na sajt</a></p>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div class="admin-app" id="admin-app" hidden>
+    <header class="admin-nav">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">DT</span>
+        <span class="brand-name">Dream Team Travel · <em>Admin</em></span>
+      </a>
+      <div class="admin-actions">
+        <button class="btn-ghost" id="reseed-btn" title="Vrati demo podatke">↻ Reset demo</button>
+        <button class="btn-ghost" id="new-booking-btn">+ Nova rezervacija</button>
+        <button class="btn-ghost" id="logout-btn">Odjava</button>
+      </div>
+    </header>
+
+    <!-- KPI traka -->
+    <section class="kpi-row">
+      <div class="kpi"><span>Danas — polazaka</span><strong id="k-today-deps">—</strong></div>
+      <div class="kpi"><span>Danas — putnika</span><strong id="k-today-pax">—</strong></div>
+      <div class="kpi"><span>Ova nedelja — rezervacija</span><strong id="k-week">—</strong></div>
+      <div class="kpi"><span>Ova nedelja — prihod</span><strong id="k-rev">—</strong></div>
+    </section>
+
+    <!-- Tabovi -->
+    <nav class="admin-tabs">
+      <button data-tab="upcoming" class="active">Nadolazeći polasci</button>
+      <button data-tab="all">Sve rezervacije</button>
+      <button data-tab="routes">Pregled po linijama</button>
+    </nav>
+
+    <!-- TAB: Upcoming -->
+    <section class="admin-section" id="tab-upcoming">
+      <div class="section-h">
+        <h2>Polasci u narednih 14 dana</h2>
+        <div class="muted-sm">Klikni red da otvoriš spisak putnika · Zatvori polazak da blokiraš dalje rezervacije</div>
+      </div>
+      <div class="dep-table" id="dep-table"></div>
+    </section>
+
+    <!-- TAB: Sve rezervacije -->
+    <section class="admin-section" id="tab-all" hidden>
+      <div class="section-h">
+        <h2>Sve rezervacije</h2>
+        <input type="search" id="all-search" placeholder="Pretraga: ime, telefon, ref kod, grad..." />
+      </div>
+      <div class="bookings-table" id="bookings-table"></div>
+    </section>
+
+    <!-- TAB: Routes -->
+    <section class="admin-section" id="tab-routes" hidden>
+      <div class="section-h">
+        <h2>Pregled po linijama</h2>
+        <div class="muted-sm">Popunjenost i prihod u narednih 14 dana</div>
+      </div>
+      <div class="routes-table" id="routes-table"></div>
+    </section>
+  </div>
+
+  <!-- Manifest modal (spisak putnika za polazak) -->
+  <div class="confirm-overlay" id="manifest-overlay" hidden>
+    <div class="confirm-modal manifest-modal">
+      <div class="manifest-head">
+        <h2 id="manifest-title">—</h2>
+        <button class="btn-text" id="close-manifest">✕</button>
+      </div>
+      <div class="manifest-sub" id="manifest-sub"></div>
+      <div class="manifest-body" id="manifest-body"></div>
+      <div class="manifest-actions">
+        <button class="btn-secondary" id="close-departure-btn">Zatvori polazak</button>
+        <button class="btn-primary" onclick="window.print()">🖨 Štampa manifest</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New booking modal -->
+  <div class="confirm-overlay" id="new-overlay" hidden>
+    <div class="confirm-modal new-modal">
+      <h2>Nova rezervacija (ručni unos)</h2>
+      <p class="muted">Za kada agencija unosi pozive primljene telefonom.</p>
+      <form id="new-form">
+        <div class="grid-2">
+          <label class="field"><span>Linija</span><select id="n-route"></select></label>
+          <label class="field"><span>Datum</span><input type="date" id="n-date" /></label>
+        </div>
+        <div class="grid-2">
+          <label class="field"><span>Polazak</span><select id="n-time"></select></label>
+          <label class="field"><span>Putnika</span>
+            <select id="n-pax">
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7</option><option>8</option>
+            </select>
+          </label>
+        </div>
+        <label class="field"><span>Tip puta</span>
+          <select id="n-trip"><option value="oneWay">Jedan pravac</option><option value="return">Povratna</option></select>
+        </label>
+        <label class="field"><span>Pickup adresa (Beograd)</span><input type="text" id="n-pickup" /></label>
+        <label class="field"><span>Dropoff adresa</span><input type="text" id="n-dropoff" /></label>
+        <label class="field"><span>Ime i prezime</span><input type="text" id="n-name" /></label>
+        <label class="field"><span>Telefon</span><input type="tel" id="n-phone" /></label>
+        <label class="field"><span>Napomena</span><textarea id="n-note" rows="2"></textarea></label>
+        <div class="new-price" id="n-price"></div>
+        <div class="new-actions">
+          <button type="button" class="btn-secondary" id="cancel-new">Odustani</button>
+          <button type="submit" class="btn-primary">Sačuvaj rezervaciju</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
