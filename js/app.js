@@ -270,12 +270,24 @@ function bindStep3() {
     showConfirmation();
   });
 
-  document.getElementById("close-confirm").addEventListener("click", () => {
+  const closeModal = () => {
     document.getElementById("confirm-overlay").hidden = true;
     document.getElementById("flow").hidden = true;
     document.getElementById("search-form").reset();
     setDefaultDate();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  document.getElementById("close-confirm").addEventListener("click", closeModal);
+
+  // klik na pozadinu modala
+  document.getElementById("confirm-overlay").addEventListener("click", e => {
+    if (e.target.id === "confirm-overlay") closeModal();
+  });
+
+  // Esc taster
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !document.getElementById("confirm-overlay").hidden) closeModal();
   });
 }
 
