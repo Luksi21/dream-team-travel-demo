@@ -182,16 +182,16 @@
           <input type="text" id="fullname" autocomplete="name" />
         </label>
 
-        <div class="grid-2">
-          <label class="field">
-            <span>Telefon</span>
-            <input type="tel" id="phone" placeholder="+381 ..." autocomplete="tel" />
-          </label>
-          <label class="field">
-            <span>Email <em>(opciono)</em></span>
-            <input type="email" id="email" autocomplete="email" />
-          </label>
-        </div>
+        <label class="field">
+          <span>Telefon</span>
+          <input type="tel" id="phone" placeholder="+381 ..." autocomplete="tel" />
+        </label>
+
+        <label class="field field-email">
+          <span>Email adresa <span class="req-dot" title="Obavezno">●</span></span>
+          <input type="email" id="email" placeholder="tvoja@email.com" autocomplete="email" required />
+          <small class="hint">📧 Šaljemo potvrdu rezervacije i podsetnik dan pre polaska.</small>
+        </label>
 
         <label class="field">
           <span>Napomena za vozača <em>(opciono)</em></span>
@@ -228,13 +228,58 @@
 
   <!-- Confirmation modal -->
   <div class="confirm-overlay" id="confirm-overlay" hidden>
-    <div class="confirm-modal">
+    <div class="confirm-modal confirm-modal-rich">
       <div class="confirm-icon">✓</div>
       <h2>Rezervacija primljena!</h2>
-      <p>Šaljemo ti detalje na WhatsApp u roku od par minuta. Vozač će te zvati 30 min pre polaska.</p>
+      <p id="confirm-greet">Vozač će te zvati 30 min pre polaska.</p>
+
       <div class="confirm-ref">
         Broj rezervacije:<br/><strong id="confirm-code">—</strong>
       </div>
+
+      <!-- Notification statuses -->
+      <div class="notif-statuses" id="notif-statuses">
+        <div class="notif-row" id="notif-email">
+          <span class="notif-ico">📧</span>
+          <div class="notif-info">
+            <strong>Email potvrda</strong>
+            <small id="notif-email-target">—</small>
+          </div>
+          <span class="notif-status pending">Šalje se...</span>
+        </div>
+        <div class="notif-row" id="notif-telegram">
+          <span class="notif-ico">📲</span>
+          <div class="notif-info">
+            <strong>Obaveštenje agenciji</strong>
+            <small>Telegram bot</small>
+          </div>
+          <span class="notif-status pending">Šalje se...</span>
+        </div>
+      </div>
+
+      <details class="notif-preview-toggle" id="notif-preview-toggle">
+        <summary>👁 Pogledaj sadržaj poruka</summary>
+        <div class="notif-preview-tabs">
+          <button type="button" class="npt-btn active" data-tab="email">📧 Email</button>
+          <button type="button" class="npt-btn" data-tab="telegram">📲 Telegram</button>
+        </div>
+        <div class="notif-preview-body" id="notif-preview-email">
+          <iframe id="notif-email-iframe" sandbox title="Email preview"></iframe>
+        </div>
+        <div class="notif-preview-body" id="notif-preview-telegram" hidden>
+          <div class="tg-frame">
+            <div class="tg-header">
+              <div class="tg-avatar">DT</div>
+              <div>
+                <strong>DTT Notify Bot</strong>
+                <small>bot · poslato sada</small>
+              </div>
+            </div>
+            <div class="tg-message" id="notif-telegram-body"></div>
+          </div>
+        </div>
+      </details>
+
       <a class="btn-whatsapp" id="whatsapp-link" target="_blank" rel="noopener">
         💬 Pošalji potvrdu na WhatsApp
       </a>
@@ -623,6 +668,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
+  <script src="js/notify.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

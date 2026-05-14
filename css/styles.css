@@ -1155,6 +1155,287 @@ img { max-width: 100%; display: block; }
 ::placeholder { color: var(--ink-300); }
 
 /* ============================================
+   NEW: Notifications (email + telegram)
+   ============================================ */
+
+/* Required dot on email field */
+.req-dot { color: var(--danger); margin-left: 4px; font-size: 10px; vertical-align: middle; }
+.field-email .hint { color: var(--ink-700); font-weight: 500; }
+.field input.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(212,82,74,.12);
+}
+
+/* Loading spinner inside button */
+.btn-spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  vertical-align: -2px;
+  margin-right: 8px;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-primary.loading { cursor: wait; opacity: .9; }
+
+/* Confirmation modal — rich version */
+.confirm-modal-rich {
+  max-width: 460px;
+  text-align: left;
+}
+.confirm-modal-rich h2, .confirm-modal-rich > p,
+.confirm-modal-rich .confirm-icon, .confirm-modal-rich .confirm-ref {
+  text-align: center;
+}
+.confirm-modal-rich .confirm-icon, .confirm-modal-rich h2 {
+  display: block;
+}
+
+/* Notification status rows */
+.notif-statuses {
+  background: var(--bg);
+  border-radius: var(--r-md);
+  padding: 12px;
+  margin: 14px 0 10px;
+  display: grid; gap: 8px;
+}
+.notif-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 8px 10px;
+  background: var(--paper);
+  border-radius: 10px;
+  border: 1px solid var(--ink-100);
+}
+.notif-ico { font-size: 22px; }
+.notif-info strong { display: block; font-size: 14px; }
+.notif-info small {
+  color: var(--ink-500); font-size: 12px;
+  font-family: ui-monospace, monospace;
+  word-break: break-all;
+}
+.notif-status {
+  font-size: 12px; font-weight: 700;
+  padding: 4px 10px; border-radius: 999px;
+  white-space: nowrap;
+}
+.notif-status.pending {
+  background: rgba(74,159,184,.12); color: var(--sea);
+}
+.notif-status.pending::before {
+  content: ""; display: inline-block;
+  width: 8px; height: 8px;
+  border: 2px solid var(--sea);
+  border-top-color: transparent;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: -1px;
+  animation: spin .7s linear infinite;
+}
+.notif-status.ok { background: rgba(26,161,121,.15); color: var(--success); }
+.notif-status.err { background: rgba(212,82,74,.12); color: var(--danger); }
+
+/* Preview toggle */
+.notif-preview-toggle {
+  background: var(--bg);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  margin: 10px 0 18px;
+  font-size: 13px;
+}
+.notif-preview-toggle summary {
+  cursor: pointer;
+  font-weight: 600; color: var(--ink-700);
+  list-style: none;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.notif-preview-toggle summary::-webkit-details-marker { display: none; }
+.notif-preview-toggle summary::after {
+  content: "▾"; color: var(--ink-300); transition: transform .2s;
+}
+.notif-preview-toggle[open] summary::after { transform: rotate(180deg); }
+
+.notif-preview-tabs {
+  display: flex; gap: 4px;
+  margin: 14px 0 12px;
+  border-bottom: 1px solid var(--ink-100);
+}
+.npt-btn {
+  background: none; border: 0;
+  padding: 8px 14px;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-500);
+  border-bottom: 2px solid transparent;
+  cursor: pointer; font-family: inherit;
+}
+.npt-btn.active {
+  color: var(--ink-900);
+  border-bottom-color: var(--accent);
+}
+
+.notif-preview-body {
+  background: var(--paper);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--ink-100);
+  overflow: hidden;
+}
+.notif-preview-body iframe {
+  width: 100%; height: 380px;
+  border: 0; display: block;
+}
+
+/* Telegram preview frame */
+.tg-frame {
+  background: #e6ebee;
+  padding: 14px;
+  min-height: 200px;
+}
+.tg-header {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.tg-avatar {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #2da5e3, #0088cc);
+  color: #fff;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-weight: 800; font-size: 13px;
+}
+.tg-header strong { display: block; font-size: 14px; color: var(--ink-900); }
+.tg-header small { color: var(--ink-500); font-size: 11px; }
+.tg-message {
+  background: #fff;
+  padding: 14px 16px;
+  border-radius: 12px 12px 12px 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-900);
+  max-width: 92%;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+.tg-message strong { color: var(--ink-900); font-weight: 700; }
+.tg-message em { color: var(--ink-700); font-style: italic; }
+.tg-message code {
+  background: rgba(10,37,64,.06);
+  padding: 1px 6px; border-radius: 4px;
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 13px;
+}
+
+/* ============================================
+   ADMIN: Notifications tab
+   ============================================ */
+.notif-config-card {
+  background: var(--paper);
+  border-radius: var(--r-md);
+  border: 1px solid var(--ink-100);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.ncc-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ink-100);
+}
+.ncc-row:last-of-type { border-bottom: 0; }
+.ncc-ico { font-size: 22px; }
+.ncc-info strong { display: block; font-size: 14px; }
+.ncc-info small { color: var(--ink-500); font-size: 12px; }
+.ncc-mode {
+  font-size: 10px; font-weight: 800;
+  background: rgba(245,183,64,.18);
+  color: var(--accent-d);
+  padding: 3px 10px; border-radius: 999px;
+  letter-spacing: .06em;
+}
+.ncc-note {
+  margin: 14px 0 0; padding: 12px 14px;
+  background: var(--bg);
+  border-radius: 10px;
+  font-size: 13px; line-height: 1.5;
+  color: var(--ink-500);
+}
+.ncc-note code {
+  background: var(--ink-100); padding: 1px 6px; border-radius: 4px;
+  font-family: ui-monospace, monospace; font-size: 12px;
+  color: var(--ink-900);
+}
+
+.notif-log { display: grid; gap: 12px; }
+.notif-log-item {
+  background: var(--paper);
+  border: 1px solid var(--ink-100);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  transition: all .15s;
+}
+.notif-log-item:hover { box-shadow: var(--shadow-sm); }
+.nli-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; margin-bottom: 10px;
+}
+.nli-head strong { display: block; font-size: 15px; }
+.nli-head small { color: var(--ink-500); font-size: 12px; }
+.nli-time {
+  font-size: 12px; color: var(--ink-500);
+  white-space: nowrap;
+}
+.nli-chans {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.nli-chan {
+  display: inline-flex; align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  background: var(--bg);
+}
+.nli-chan.ok { background: rgba(26,161,121,.1); color: var(--success); }
+.nli-chan.err { background: rgba(212,82,74,.1); color: var(--danger); }
+.nli-view {
+  background: none; border: 0;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-700);
+  padding: 4px 0;
+  border-bottom: 2px solid var(--accent);
+  cursor: pointer; font-family: inherit;
+}
+.nli-view:hover { color: var(--ink-900); }
+
+/* Notif detail modal */
+.notif-detail-modal {
+  max-width: 720px;
+  width: 100%;
+  text-align: left;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.notif-detail-modal .notif-preview-body iframe { height: 480px; }
+.notif-detail-sub {
+  color: var(--ink-500); font-size: 13px;
+  margin-bottom: 8px;
+}
+.notif-detail-sub .status-pill { margin-left: 4px; }
+
+@media (max-width: 540px) {
+  .admin-actions { flex-wrap: wrap; }
+  #test-notif-btn { width: 100%; margin-bottom: 4px; }
+}
+
+/* ============================================
    ADMIN PANEL
    ============================================ */
 .admin-body { background: var(--bg); padding-bottom: 0; }

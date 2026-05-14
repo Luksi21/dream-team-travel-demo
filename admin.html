@@ -40,6 +40,7 @@
         <span class="brand-name">Dream Team Travel · <em>Admin</em></span>
       </a>
       <div class="admin-actions">
+        <button class="btn-ghost" id="test-notif-btn" title="Pošalji test email + Telegram">📤 Test obaveštenja</button>
         <button class="btn-ghost" id="reseed-btn" title="Vrati demo podatke">↻ Reset demo</button>
         <button class="btn-ghost" id="new-booking-btn">+ Nova rezervacija</button>
         <button class="btn-ghost" id="logout-btn">Odjava</button>
@@ -59,6 +60,7 @@
       <button data-tab="upcoming" class="active">Nadolazeći polasci</button>
       <button data-tab="all">Sve rezervacije</button>
       <button data-tab="routes">Pregled po linijama</button>
+      <button data-tab="notifs">📨 Obaveštenja</button>
     </nav>
 
     <!-- TAB: Upcoming -->
@@ -86,6 +88,40 @@
         <div class="muted-sm">Popunjenost i prihod u narednih 14 dana</div>
       </div>
       <div class="routes-table" id="routes-table"></div>
+    </section>
+
+    <!-- TAB: Notifikacije -->
+    <section class="admin-section" id="tab-notifs" hidden>
+      <div class="section-h">
+        <h2>Istorija obaveštenja</h2>
+        <div class="muted-sm">Email i Telegram poruke poslate prilikom rezervacija</div>
+      </div>
+
+      <div class="notif-config-card">
+        <div class="ncc-row">
+          <span class="ncc-ico">📧</span>
+          <div class="ncc-info">
+            <strong>Email · Resend</strong>
+            <small>Sender: Petar Pejić &lt;pejicpetar21@gmail.com&gt;</small>
+          </div>
+          <span class="ncc-mode">DEMO MODE</span>
+        </div>
+        <div class="ncc-row">
+          <span class="ncc-ico">📲</span>
+          <div class="ncc-info">
+            <strong>Telegram</strong>
+            <small>Chat: @DreamTeamTravelAdmin (bot: DTT Notify Bot)</small>
+          </div>
+          <span class="ncc-mode">DEMO MODE</span>
+        </div>
+        <p class="ncc-note">
+          Trenutno se simuliraju slanja sa realističnim šablonima — sva istorija je sačuvana ispod.
+          Za stvarno slanje, postaviti Cloudflare Worker sa Resend + Telegram API integracijom
+          (kod pripremljen u <code>worker/</code> folderu).
+        </p>
+      </div>
+
+      <div class="notif-log" id="notif-log"></div>
     </section>
   </div>
 
@@ -141,8 +177,39 @@
     </div>
   </div>
 
+  <!-- Notification preview modal -->
+  <div class="confirm-overlay" id="notif-detail-overlay" hidden>
+    <div class="confirm-modal notif-detail-modal">
+      <div class="manifest-head">
+        <h2 id="notif-detail-title">Obaveštenje</h2>
+        <button class="btn-text" id="notif-detail-close">✕</button>
+      </div>
+      <div class="notif-detail-sub" id="notif-detail-sub"></div>
+      <div class="notif-preview-tabs">
+        <button type="button" class="npt-btn active" data-d-tab="email">📧 Email</button>
+        <button type="button" class="npt-btn" data-d-tab="telegram">📲 Telegram</button>
+      </div>
+      <div class="notif-preview-body" id="notif-d-email">
+        <iframe id="notif-detail-iframe" sandbox title="Email preview"></iframe>
+      </div>
+      <div class="notif-preview-body" id="notif-d-telegram" hidden>
+        <div class="tg-frame">
+          <div class="tg-header">
+            <div class="tg-avatar">DT</div>
+            <div>
+              <strong>DTT Notify Bot</strong>
+              <small id="notif-detail-tg-time">bot</small>
+            </div>
+          </div>
+          <div class="tg-message" id="notif-detail-tg-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
+  <script src="js/notify.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

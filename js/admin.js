@@ -21,6 +21,8 @@
       bindNewBooking();
       bindReseed();
       bindLogout();
+      bindTestNotif();
+      bindNotifDetail();
       S.onChange(renderAll);
       console.log("[admin] inicijalizovano ✓");
     } catch (e) {
@@ -81,6 +83,8 @@
         $("tab-upcoming").hidden = tab !== "upcoming";
         $("tab-all").hidden = tab !== "all";
         $("tab-routes").hidden = tab !== "routes";
+        $("tab-notifs").hidden = tab !== "notifs";
+        if (tab === "notifs") renderNotifLog();
       });
     });
     const search = $("all-search");
@@ -93,6 +97,7 @@
     renderUpcoming();
     renderAllBookings();
     renderRoutesOverview();
+    renderNotifLog();
   }
 
   function renderKPIs() {
@@ -398,5 +403,133 @@
   function fmtDateShort(iso) {
     return new Date(iso + "T00:00:00").toLocaleDateString("sr-RS",
       { weekday: "short", day: "numeric", month: "short" });
+  }
+  function fmtTimestamp(iso) {
+    return new Date(iso).toLocaleString("sr-RS",
+      { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+
+  // ===== Notifikacije =====
+  function renderNotifLog() {
+    const wrap = $("notif-log");
+    if (!wrap) return;
+    const log = window.Notify ? window.Notify.log() : [];
+
+    if (!log.length) {
+      wrap.innerHTML = `<div class="empty">
+        Još nema poslatih obaveštenja. Klikni <strong>📤 Test obaveštenja</strong> u headeru
+        da pošalješ probnu poruku.
+      </div>`;
+      return;
+    }
+
+    wrap.innerHTML = log.map(entry => `
+      <div class="notif-log-item" data-id="${entry.id}">
+        <div class="nli-head">
+          <div>
+            <strong>Rezervacija ${entry.bookingRef}</strong>
+            <small>Beograd → ${entry.bookingCity}</small>
+          </div>
+          <div class="nli-time">${fmtTimestamp(entry.timestamp)}</div>
+        </div>
+        <div class="nli-chans">
+          <span class="nli-chan ${entry.email.ok ? 'ok' : 'err'}">
+            📧 Email · ${entry.email.recipient || "—"} · ${entry.email.ok ? "✓ Poslato" : "✗ " + (entry.email.error || "Neuspešno")}
+          </span>
+          <span class="nli-chan ${entry.telegram.ok ? 'ok' : 'err'}">
+            📲 Telegram · ${entry.telegram.recipient} · ${entry.telegram.ok ? "✓ Poslato" : "✗ Greška"}
+          </span>
+        </div>
+        <button class="btn-text-arrow nli-view" data-id="${entry.id}">Pogledaj sadržaj →</button>
+      </div>
+    `).join("");
+
+    wrap.querySelectorAll(".nli-view").forEach(b => {
+      b.addEventListener("click", () => openNotifDetail(b.dataset.id));
+    });
+  }
+
+  function openNotifDetail(id) {
+    const log = window.Notify.log();
+    const entry = log.find(e => e.id === id);
+    if (!entry) return;
+
+    $("notif-detail-title").textContent = `Obaveštenje za rezervaciju ${entry.bookingRef}`;
+    $("notif-detail-sub").innerHTML =
+      `Beograd → ${entry.bookingCity} · ${fmtTimestamp(entry.timestamp)} ${entry.mock ? '· <span class="status-pill done">DEMO</span>' : ''}`;
+
+    // Reset tabs
+    document.querySelectorAll(".notif-detail-modal .npt-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector('.notif-detail-modal .npt-btn[data-d-tab="email"]').classList.add("active");
+    $("notif-d-email").hidden = false;
+    $("notif-d-telegram").hidden = true;
+
+    // Email preview u iframe-u
+    const iframe = $("notif-detail-iframe");
+    if (iframe && entry.email.html) {
+      iframe.srcdoc = entry.email.html;
+    }
+    $("notif-detail-tg-time").textContent = "bot · " + fmtTimestamp(entry.timestamp);
+    $("notif-detail-tg-body").innerHTML = formatTelegramHtml(entry.telegram.text || "");
+
+    $("notif-detail-overlay").hidden = false;
+  }
+
+  function bindNotifDetail() {
+    const overlay = $("notif-detail-overlay");
+    if (!overlay) return;
+    const close = () => overlay.hidden = true;
+    $("notif-detail-close").addEventListener("click", close);
+    overlay.addEventListener("click", e => { if (e.target.id === "notif-detail-overlay") close(); });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && !overlay.hidden) close();
+    });
+
+    document.querySelectorAll(".notif-detail-modal .npt-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".notif-detail-modal .npt-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.dTab;
+        $("notif-d-email").hidden = tab !== "email";
+        $("notif-d-telegram").hidden = tab !== "telegram";
+      });
+    });
+  }
+
+  function bindTestNotif() {
+    const btn = $("test-notif-btn");
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      const original = btn.innerHTML;
+      btn.innerHTML = `<span class="btn-spinner"></span> Šalje se...`;
+      try {
+        await window.Notify.sendTestNotification();
+        btn.innerHTML = "✓ Poslato!";
+        renderNotifLog();
+        // Switch na notifs tab
+        document.querySelectorAll(".admin-tabs button").forEach(x => x.classList.remove("active"));
+        document.querySelector('.admin-tabs button[data-tab="notifs"]').classList.add("active");
+        $("tab-upcoming").hidden = true;
+        $("tab-all").hidden = true;
+        $("tab-routes").hidden = true;
+        $("tab-notifs").hidden = false;
+        setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 2000);
+      } catch (e) {
+        console.error("[admin] test notif:", e);
+        btn.innerHTML = "✗ Greška";
+        setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 2000);
+      }
+    });
+  }
+
+  function formatTelegramHtml(text) {
+    return text
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/\*([^\n*]+)\*/g, "<strong>$1</strong>")
+      .replace(/_([^\n_]+)_/g, "<em>$1</em>")
+      .replace(/`([^\n`]+)`/g, "<code>$1</code>")
+      .replace(/\n/g, "<br>");
   }
 })();

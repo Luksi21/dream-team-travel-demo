@@ -331,6 +331,8 @@
   }
 
   // ===== STEP 2 =====
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   function bindStep2() {
     on("to-step-3", "click", () => {
       const pickup = $("pickup").value.trim();
@@ -345,11 +347,24 @@
       if (!dropoff) { alert("Unesi adresu/hotel dolaska."); $("dropoff").focus(); return; }
       if (!fullname || fullname.length < 3) { alert("Unesi ime i prezime."); $("fullname").focus(); return; }
       if (!phone || phone.length < 6) { alert("Unesi telefon — vozač te zove pre polaska."); $("phone").focus(); return; }
+      if (!email || !emailRe.test(email)) {
+        alert("Unesi validnu email adresu — tamo šaljemo potvrdu rezervacije.");
+        $("email").focus(); return;
+      }
 
       Object.assign(state, { pickup, dropoff, fullname, phone, email, note, whatsappOpt });
       renderStep3();
       goToStep(3);
     });
+
+    // Live validacija emaila
+    const emailEl = $("email");
+    if (emailEl) {
+      emailEl.addEventListener("blur", () => {
+        const v = emailEl.value.trim();
+        emailEl.classList.toggle("invalid", v && !emailRe.test(v));
+      });
+    }
   }
 
   // ===== STEP 3 =====
@@ -375,8 +390,13 @@
     $("price-total").textContent = fmtEur(total);
   }
 
+  let isSubmitting = false; // sprečava duplo slanje
+
   function bindStep3() {
-    on("confirm", "click", () => {
+    on("confirm", "click", async () => {
+      if (isSubmitting) return;
+      const btn = $("confirm");
+
       if (!$("terms").checked) {
         alert("Molim te prihvati uslove prevoza.");
         return;
@@ -389,21 +409,46 @@
         return;
       }
 
-      const r = D.findRoute(state.routeId);
-      const price = state.tripType === "return" ? r.return : r.oneWay;
-      const total = price * state.pax;
+      // Loading state
+      isSubmitting = true;
+      btn.disabled = true;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<span class="btn-spinner"></span> Šaljemo potvrdu...`;
+      btn.classList.add("loading");
 
-      const booking = S.create({
-        routeId: r.id, routeCity: r.city,
-        date: state.date, time: state.time,
-        pax: state.pax, tripType: state.tripType, totalPrice: total,
-        pickup: state.pickup, dropoff: state.dropoff,
-        fullname: state.fullname, phone: state.phone,
-        email: state.email, note: state.note,
-        whatsappOpt: state.whatsappOpt, source: "web",
-      });
+      try {
+        const r = D.findRoute(state.routeId);
+        const price = state.tripType === "return" ? r.return : r.oneWay;
+        const total = price * state.pax;
 
-      showConfirmation(booking);
+        const booking = S.create({
+          routeId: r.id, routeCity: r.city,
+          date: state.date, time: state.time,
+          pax: state.pax, tripType: state.tripType, totalPrice: total,
+          pickup: state.pickup, dropoff: state.dropoff,
+          fullname: state.fullname, phone: state.phone,
+          email: state.email, note: state.note,
+          whatsappOpt: state.whatsappOpt, source: "web",
+        });
+
+        // Prikaži modal sa pending statusima
+        showConfirmation(booking, null);
+
+        // Pošalji obaveštenja (mock — vidi js/notify.js)
+        const notifyResult = await window.Notify.sendBookingConfirmation(booking);
+
+        // Update statusa
+        updateNotifStatuses(notifyResult);
+      } catch (e) {
+        console.error("[app] confirm failed:", e);
+        alert("Došlo je do greške pri čuvanju rezervacije. Pokušaj ponovo ili nas pozovi.");
+        btn.innerHTML = originalText;
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      } finally {
+        isSubmitting = false;
+        // ne vraćamo originalText — modal je otvoren, dugme nije više vidljivo
+      }
     });
 
     const closeModal = () => {
@@ -411,6 +456,11 @@
       $("flow").hidden = true;
       $("search-form").reset();
       setDefaultDate();
+      // Reset confirm button za sledeću rezervaciju
+      const btn = $("confirm");
+      btn.innerHTML = "Potvrdi rezervaciju";
+      btn.classList.remove("loading");
+      btn.disabled = false;
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
@@ -421,10 +471,76 @@
     document.addEventListener("keydown", e => {
       if (e.key === "Escape" && !$("confirm-overlay").hidden) closeModal();
     });
+
+    // Preview tabs (Email / Telegram)
+    document.querySelectorAll(".npt-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".npt-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.tab;
+        $("notif-preview-email").hidden = tab !== "email";
+        $("notif-preview-telegram").hidden = tab !== "telegram";
+      });
+    });
+  }
+
+  function updateNotifStatuses(result) {
+    const emailRow = $("notif-email");
+    const tgRow = $("notif-telegram");
+    const emailStatus = emailRow.querySelector(".notif-status");
+    const tgStatus = tgRow.querySelector(".notif-status");
+
+    if (result.email.ok) {
+      emailStatus.textContent = "✓ Poslato";
+      emailStatus.className = "notif-status ok";
+    } else {
+      emailStatus.textContent = "✗ Greška";
+      emailStatus.className = "notif-status err";
+    }
+    if (result.telegram.ok) {
+      tgStatus.textContent = "✓ Poslato";
+      tgStatus.className = "notif-status ok";
+    } else {
+      tgStatus.textContent = "✗ Greška";
+      tgStatus.className = "notif-status err";
+    }
+
+    // Renderuj preview-e
+    const iframe = $("notif-email-iframe");
+    if (iframe && result.email.content) {
+      iframe.srcdoc = result.email.content.html;
+    }
+    if (result.telegram.content) {
+      $("notif-telegram-body").innerHTML = formatTelegramHtml(result.telegram.content);
+    }
+  }
+
+  // Konvertuj telegram markdown u HTML za preview
+  function formatTelegramHtml(text) {
+    return text
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/\*([^\n*]+)\*/g, "<strong>$1</strong>")
+      .replace(/_([^\n_]+)_/g, "<em>$1</em>")
+      .replace(/`([^\n`]+)`/g, "<code>$1</code>")
+      .replace(/\n/g, "<br>");
   }
 
   function showConfirmation(booking) {
     $("confirm-code").textContent = booking.ref;
+    $("confirm-greet").textContent = `Hvala, ${booking.fullname.split(" ")[0]}! Vozač će te zvati 30 min pre polaska.`;
+
+    // Reset notification status na "pending"
+    $("notif-email-target").textContent = booking.email || "(bez emaila)";
+    const emailStatus = $("notif-email").querySelector(".notif-status");
+    const tgStatus = $("notif-telegram").querySelector(".notif-status");
+    emailStatus.textContent = "Šalje se...";
+    emailStatus.className = "notif-status pending";
+    tgStatus.textContent = "Šalje se...";
+    tgStatus.className = "notif-status pending";
+
+    // Reset preview toggle u zatvoreno stanje
+    const toggle = $("notif-preview-toggle");
+    if (toggle) toggle.open = false;
 
     const msg = encodeURIComponent(
 `Zdravo Dream Team Travel!

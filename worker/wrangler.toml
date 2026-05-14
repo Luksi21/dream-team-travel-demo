@@ -1,0 +1,12 @@
+name = "dtt-notify"
+main = "notify.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://luksi21.github.io"
+
+# Secrets (postavi sa: wrangler secret put NAZIV)
+#   RESEND_API_KEY
+#   RESEND_FROM
+#   TELEGRAM_BOT_TOKEN
+#   TELEGRAM_CHAT_ID
